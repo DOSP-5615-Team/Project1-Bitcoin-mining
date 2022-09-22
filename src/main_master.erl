@@ -1,6 +1,6 @@
 -module(main_master).
 
--export([ start_master/1, generate_random/2, countZeros/2, returnString/2, runLoop/1, listenForWorkers/1]).
+-export([ start_master/1, generate_random/2, countZeros/2, returnString/2, listenForWorkers/1]).
 
 start_master(ZeroCount) ->
   register(masterNode, spawn( main_master, listenForWorkers, [ZeroCount])),
@@ -20,13 +20,21 @@ generate_random(Length, AllowedChars) ->
 
 countZeros([_First | _Rest],0)->
   found;
+countZeros([First | Rest],1)->
+  [Next | _] = Rest,
+  if
+    First == 48  andalso Next /= 48 ->
+      countZeros(Rest, 0);
+    true -> notFound
+  end
+;
 countZeros([First | Rest],Zeros) when Zeros > 0 ->
   %io:format("List is :: ~w ~n" , [[First | Rest]]),
   %io:format("First is :: ~w ~n" , [First]),
   %io:format("LAst is :: ~w ~n" , [Rest]),
   % Comparing with 0 (whose binary value is 48)
   if
-    First == 48 ->
+    First == 48  ->
       countZeros(Rest, Zeros-1);
     true -> notFound
   end

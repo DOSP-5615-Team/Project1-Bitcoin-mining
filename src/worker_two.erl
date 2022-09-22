@@ -1,6 +1,6 @@
 -module(worker_two).
 
--export([start_worker/2, generate_random/2, countZeros/2, returnString/4, runLoop/1, listenForServer/2]).
+-export([start_worker/2, generate_random/2, countZeros/2, returnString/4, listenForServer/2]).
 -define(WORKER_PID_NAME, workerNodeTwo).
 start_worker(ServerPID, ServerNode) ->
   register(?WORKER_PID_NAME, spawn(worker_two, listenForServer, [ServerPID, ServerNode])),
@@ -18,6 +18,14 @@ generate_random(Length, AllowedChars) ->
 
 countZeros([_First | _Rest],0)->
   found;
+countZeros([First | Rest],1)->
+  [Next | _] = Rest,
+  if
+    First == 48  andalso Next /= 48 ->
+      countZeros(Rest, 0);
+    true -> notFound
+  end
+;
 countZeros([First | Rest],Zeros) when Zeros > 0 ->
   %io:format("List is :: ~w ~n" , [[First | Rest]]),
   %io:format("First is :: ~w ~n" , [First]),
