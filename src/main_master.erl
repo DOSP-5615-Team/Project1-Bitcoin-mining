@@ -1,6 +1,6 @@
 -module(main_master).
 
--export([ start_master/1, generate_random/2, countZeros/2, returnString/1, runLoop/1, listenForWorkers/1]).
+-export([ start_master/1, generate_random/2, countZeros/2, returnString/2, runLoop/1, listenForWorkers/1]).
 
 
 %start_master() ->
@@ -8,7 +8,15 @@
 %  io:format("This is ~p",[pid_to_list(whereis(masterNode))]).
 
 start_master(ZeroCount) ->
-  register(masterNode, spawn( main_master, listenForWorkers, [ZeroCount])).
+  register(masterNode, spawn( main_master, listenForWorkers, [ZeroCount])),
+{masterNode, node()} ! {ready_to_mine_server, masterNode},
+  lists:foreach(
+    fun(_) ->
+      spawn(main_master, returnString,[ZeroCount, 10])
+    end, lists:seq(1, 3)).
+
+
+
  % Pid = spawn(main_master, listenForWorkers, [ZeroCount]),
  % io:fwrite("PID of me: ~p~n",[pid_to_list(Pid)]),
  % yes = global:register_name('masterPID', Pid).
@@ -36,31 +44,39 @@ countZeros([First | Rest],Zeros) when Zeros > 0 ->
   end
 .
 
-returnString( ZeroCount)->
+returnString( ZeroCount, 0)->
+
+  %io:format("Master child process stopped mining ~n"),
+  exit("normal");
+returnString( ZeroCount, CoinsToBeMined)->
   RandomStringLength = 8,
   [RandomString, RandomHash] = generate_random(RandomStringLength, "ABCDEFGHIJKLMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"),
   CheckTrue = countZeros(RandomHash, ZeroCount),
   case CheckTrue of
     found ->
+    %  io:format("Format done"),
       io:format("~s", [string:concat(RandomString, string:concat(" ",RandomHash))]),
-      %io:fwrite("PID : ~p~n",[pid_to_list(self())]),
       io:format("PID : ~p ~n", [masterNode]),
-      listenForWorkers(ZeroCount);
+    %  {masterNode, node()} ! {coinFound_in_Master, string:concat(RandomString, string:concat(" ",RandomHash))};
+     % exit(normal);
+     % listenForWorkers(ZeroCount);
+      returnString( ZeroCount, CoinsToBeMined-1);
     notFound ->
       %io:fwrite(" Not found in PID : ~p~n",[pid_to_list(self())]),
-      returnString( ZeroCount)
+      returnString( ZeroCount, CoinsToBeMined)
   end.
 
 runLoop(Key) ->
   lists:foreach(
     fun(_) ->
-      returnString(Key)
+      returnString(Key, 5)
     end, lists:seq(1, 30)).
 
+%listenForWorkers(ZeroCount)->
+%  exit(normal);
 listenForWorkers(ZeroCount)->
   %returnString(ZeroCount),
  % whereis(masterNode) ! {ready_to_mine_server, whereis(masterNode)},
-  {masterNode, node()} ! {ready_to_mine_server, masterNode},
   receive
     {ready_to_mine, WorkerPID, WorkerNode} ->
       io:format("Worker ready to mine coins ~n"),
@@ -68,18 +84,23 @@ listenForWorkers(ZeroCount)->
       {WorkerPID, WorkerNode} !  {startMining, ZeroCount, masterNode, node()},
     listenForWorkers(ZeroCount);
 
+   % {coinFound_in_Master, FoundString } ->
+    %  io:format("Reached the server"),
+    %  io:format("~s",[FoundString]),
+    %  io:fwrite("PID : ~p~n",[masterNode]),
+    %listenForWorkers(ZeroCount);
+
     { coinFound, StringFound, SenderPIDName, SenderNode , ZeroCount } ->
      % io:format("Coin found by worker"),
       io:format("~s",[StringFound]),
        io:fwrite("PID : ~p~n",[SenderPIDName]),
-      {SenderPIDName, SenderNode} ! {startMining, ZeroCount , masterNode, node()},
-      listenForWorkers(ZeroCount);
+     % {SenderPIDName, SenderNode} ! {startMining, ZeroCount , masterNode, node()},
+      listenForWorkers(ZeroCount)
 
-      {ready_to_mine_server, MasterPIDName} ->
+     % {ready_to_mine_server, MasterPIDName} -> io:format("Server started mining")
        % io:fwrite(" Master is mining, Master PID : ~p~n",[pid_to_list(whereis(MasterPIDName))]),
-        returnString(ZeroCount)
+
   end
-%, returnString(ZeroCount)
 .
 
 

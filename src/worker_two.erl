@@ -1,6 +1,6 @@
 -module(worker_two).
 
--export([start_worker/2, generate_random/2, countZeros/2, returnString/3, runLoop/1, listenForServer/2]).
+-export([start_worker/2, generate_random/2, countZeros/2, returnString/4, runLoop/1, listenForServer/2]).
 -define(WORKER_PID_NAME, workerNodeTwo).
 start_worker(ServerPID, ServerNode) ->
   register(?WORKER_PID_NAME, spawn(worker_two, listenForServer, [ServerPID, ServerNode])),
@@ -35,23 +35,28 @@ countZeros([First | Rest],Zeros) when Zeros > 0 ->
   end
 .
 
-returnString(ServerPIDName, ServerNode, ZeroCount)->
+returnString(ServerPIDName, ServerNode, ZeroCount, 0)->
+  %io:format("Worker child process stopped mining ~n"),
+  exit("normal");
+
+returnString(ServerPIDName, ServerNode, ZeroCount, N)->
   RandomStringLength = 8,
   [RandomString, RandomHash] = generate_random(RandomStringLength, "ABCDEFGHIJKLMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"),
   CheckTrue = countZeros(RandomHash, ZeroCount),
   case CheckTrue of
     found ->
       {ServerPIDName, ServerNode} ! {coinFound, string:concat(RandomString, string:concat(" ",RandomHash)), ?WORKER_PID_NAME, node(), ZeroCount},
-    listenForServer(ServerPIDName, ServerNode);
+   % listenForServer(ServerPIDName, ServerNode);
+      returnString(ServerPIDName, ServerNode, ZeroCount, N-1);
     notFound ->
       %io:fwrite(" Not found in PID : ~p~n",[pid_to_list(self())]),
-      returnString(ServerPIDName,ServerNode, ZeroCount)
+      returnString(ServerPIDName,ServerNode, ZeroCount, N)
   end.
 
 runLoop(Key) ->
   lists:foreach(
     fun(_) ->
-      returnString(Key,8,3)
+      returnString(Key,8,3, 3)
     end, lists:seq(1, 30)).
 
 
@@ -61,6 +66,10 @@ listenForServer(MasterPIDName, MasterNode) ->
   receive
     {startMining, ZeroCount, MasterPIDName, MasterNode} ->
       io:format("Start to mine called ~n"),
-      returnString(MasterPIDName, MasterNode , ZeroCount),
+     % returnString(MasterPIDName, MasterNode , ZeroCount),
+      lists:foreach(
+        fun(_) ->
+          spawn(worker_two, returnString,[MasterPIDName, MasterNode , ZeroCount, 10])
+        end, lists:seq(1, 3)),
       listenForServer(MasterPIDName, MasterNode)
   end.
