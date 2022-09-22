@@ -29,9 +29,6 @@ countZeros([First | Rest],1)->
   end
 ;
 countZeros([First | Rest],Zeros) when Zeros > 0 ->
-  %io:format("List is :: ~w ~n" , [[First | Rest]]),
-  %io:format("First is :: ~w ~n" , [First]),
-  %io:format("LAst is :: ~w ~n" , [Rest]),
   % Comparing with 0 (whose binary value is 48)
   if
     First == 48  ->
@@ -75,7 +72,10 @@ listenForWorkers(ZeroCount)->
        io:fwrite("PID : ~p~n",[SenderPIDName]),
       listenForWorkers(ZeroCount)
 
-  end
+  after 5000 ->
+    exit("normal")
+
+end
 .
 
 %1. timers
