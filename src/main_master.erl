@@ -60,7 +60,8 @@ returnString( ZeroCount, CoinsToBeMined)->
   end.
 
 listenForWorkers(ZeroCount)->
-
+  {_,CPU_time} = statistics(runtime),
+  {_,Run_time} = statistics(wall_clock),
   receive
     {ready_to_mine, WorkerPID, WorkerNode} ->
       io:format("Worker ready to mine coins ~n"),
@@ -73,7 +74,15 @@ listenForWorkers(ZeroCount)->
       listenForWorkers(ZeroCount)
 
   after 5000 ->
-    exit("normal")
+
+    T = CPU_time/ 1000,
+    T2 = Run_time / 1000,
+    T3 = T2/ T,
+    timer:sleep(60000),
+    io:format("CPU time: ~p seconds\n", [T2]),
+    io:format("Real time: ~p seconds\n", [T]),
+    io:format("Ratio is ~p \n", [T3]),
+    exit(normal)
 
 end
 .
