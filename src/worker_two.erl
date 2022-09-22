@@ -8,11 +8,6 @@ start_worker(ServerPID, ServerNode) ->
 % Initially send a ping to server indicating worker is available to mine coins
 {ServerPID, ServerNode} ! {ready_to_mine, ?WORKER_PID_NAME, node()}.
 
- % register(workerNode, Pid).
- % io:fwrite("Master's PID is :: ~p ~n", [pid_to_list(global:whereis_name(ServerPID))]),
-%  WorkerPID  = spawn(worker, listenForServer, [ServerPID, ServerNode]),
-%  yes = global:register_name(WorkerPID, WorkerPID).
-
 generate_random(Length, AllowedChars) ->
   MaxLength = length(AllowedChars),
   RandomString = string:concat("vemetlapalli;",lists:foldl(
@@ -52,12 +47,6 @@ returnString(ServerPIDName, ServerNode, ZeroCount, N)->
       %io:fwrite(" Not found in PID : ~p~n",[pid_to_list(self())]),
       returnString(ServerPIDName,ServerNode, ZeroCount, N)
   end.
-
-runLoop(Key) ->
-  lists:foreach(
-    fun(_) ->
-      returnString(Key,8,3, 3)
-    end, lists:seq(1, 30)).
 
 
 listenForServer(MasterPIDName, MasterNode) ->

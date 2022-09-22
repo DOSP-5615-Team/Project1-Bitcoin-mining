@@ -2,11 +2,6 @@
 
 -export([ start_master/1, generate_random/2, countZeros/2, returnString/2, runLoop/1, listenForWorkers/1]).
 
-
-%start_master() ->
-%   register(masterNode, spawn(server_two, listenForWorkers, [])),
-%  io:format("This is ~p",[pid_to_list(whereis(masterNode))]).
-
 start_master(ZeroCount) ->
   register(masterNode, spawn( main_master, listenForWorkers, [ZeroCount])),
 {masterNode, node()} ! {ready_to_mine_server, masterNode},
@@ -14,13 +9,6 @@ start_master(ZeroCount) ->
     fun(_) ->
       spawn(main_master, returnString,[ZeroCount, 10])
     end, lists:seq(1, 3)).
-
-
-
- % Pid = spawn(main_master, listenForWorkers, [ZeroCount]),
- % io:fwrite("PID of me: ~p~n",[pid_to_list(Pid)]),
- % yes = global:register_name('masterPID', Pid).
-
 
 generate_random(Length, AllowedChars) ->
   MaxLength = length(AllowedChars),
@@ -66,45 +54,20 @@ returnString( ZeroCount, CoinsToBeMined)->
       returnString( ZeroCount, CoinsToBeMined)
   end.
 
-runLoop(Key) ->
-  lists:foreach(
-    fun(_) ->
-      returnString(Key, 5)
-    end, lists:seq(1, 30)).
-
-%listenForWorkers(ZeroCount)->
-%  exit(normal);
 listenForWorkers(ZeroCount)->
-  %returnString(ZeroCount),
- % whereis(masterNode) ! {ready_to_mine_server, whereis(masterNode)},
+
   receive
     {ready_to_mine, WorkerPID, WorkerNode} ->
       io:format("Worker ready to mine coins ~n"),
-    %  io:fwrite(" PID of wo : ~p  and node is ~p ~n",[pid_to_list(whereis(WorkerPID)), WorkerNode]),
       {WorkerPID, WorkerNode} !  {startMining, ZeroCount, masterNode, node()},
     listenForWorkers(ZeroCount);
 
-   % {coinFound_in_Master, FoundString } ->
-    %  io:format("Reached the server"),
-    %  io:format("~s",[FoundString]),
-    %  io:fwrite("PID : ~p~n",[masterNode]),
-    %listenForWorkers(ZeroCount);
-
     { coinFound, StringFound, SenderPIDName, SenderNode , ZeroCount } ->
-     % io:format("Coin found by worker"),
       io:format("~s",[StringFound]),
        io:fwrite("PID : ~p~n",[SenderPIDName]),
-     % {SenderPIDName, SenderNode} ! {startMining, ZeroCount , masterNode, node()},
       listenForWorkers(ZeroCount)
-
-     % {ready_to_mine_server, MasterPIDName} -> io:format("Server started mining")
-       % io:fwrite(" Master is mining, Master PID : ~p~n",[pid_to_list(whereis(MasterPIDName))]),
 
   end
 .
 
-
-
 %1. timers
-%2. Server should start mining incase of no workers
-%3. Worker loop needed
