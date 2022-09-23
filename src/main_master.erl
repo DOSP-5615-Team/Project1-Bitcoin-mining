@@ -62,7 +62,6 @@ returnString( ZeroCount, CoinsToBeMined)->
   end.
 
 listenForWorkers(ZeroCount)->
-
   receive
     {ready_to_mine, WorkerPID, WorkerNode} ->
       io:format("Worker ready to mine coins ~n"),
