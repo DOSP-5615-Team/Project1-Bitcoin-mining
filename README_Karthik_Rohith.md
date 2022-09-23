@@ -16,11 +16,23 @@ Initially the master and worker nodes are registered in the same network pool us
 
 Once the connection is established, first the master process is started followed by the worker processes.
 
+**Master:**
+
 <img
-  src="/img/master_start.png"
+  src="/img/Screenshot (134).png"
   alt="Master Server"
   title="Optional title"
   style="display: inline-block; margin: 0 auto; max-width: 300px">
+
+**Worker One( On remote node in a different machine):**
+
+<img
+  src="/img/Worker_ping_and_Start.png"
+  alt="Master Server"
+  title="Optional title"
+  style="display: inline-block; margin: 0 auto; max-width: 300px">
+
+**Worker Two( On different node in same machine):**
 
 <img
   src="/img/Screenshot (141).png"
