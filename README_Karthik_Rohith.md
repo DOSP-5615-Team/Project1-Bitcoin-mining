@@ -12,11 +12,21 @@ Bitcoins (see http://en.wikipedia.org/wiki/Bitcoin) are the most popular crypto-
 
 **Implementation**
 
-Initially worker1 and worker2, who already knows the master node and process name, pings the master to establish the connection.
+Initially the master and worker nodes are registered in the same network pool using shared secure cookie. After this the worker nodes who already know the master node and master process name, ping the master node to establish a connection for message passing.
 
-Once the connection is established first the master and the workers should be started.
+Once the connection is established, first the master process is started followed by the worker processes.
 
-![Screenshot](https://github.com/DOSP-5615-Team/Project1-Bitcoin-mining/tree/master/img/master_start.png)
+<img
+  src="/img/master_start.png"
+  alt="Master Server"
+  title="Optional title"
+  style="display: inline-block; margin: 0 auto; max-width: 300px">
+
+<img
+  src="/img/Screenshot (141).png"
+  alt="Master Server"
+  title="Optional title"
+  style="display: inline-block; margin: 0 auto; max-width: 300px">
 
 Then the master sends the coins to the next available workers that are to be mined and also mines some coins by itself.
 
