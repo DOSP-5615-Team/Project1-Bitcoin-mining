@@ -16,7 +16,7 @@ Initially worker1 and worker2, who already knows the master node and process nam
 
 Once the connection is established first the master and the workers should be started.
 
-![alt text](https://github.com/DOSP-5615-Team/Project1-Bitcoin-mining/tree/master/img/master_start.png)
+![Screenshot](https://github.com/DOSP-5615-Team/Project1-Bitcoin-mining/tree/master/img/master_start.png)
 
 Then the master sends the coins to the next available workers that are to be mined and also mines some coins by itself.
 
