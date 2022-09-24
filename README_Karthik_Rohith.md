@@ -81,7 +81,7 @@ The below are the coins mined that contain 4 leading zeros.
   style="display: inline-block; margin: 0 auto; max-width: 300px">
   
 
-**The ratio of CPU Time to REAL Time**
+**The ratio of CPU Time to REAL Time for multiple runs**
 
 <img
   src="/img/timer1.png"
