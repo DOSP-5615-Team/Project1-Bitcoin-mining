@@ -12,7 +12,7 @@ Bitcoins (see http://en.wikipedia.org/wiki/Bitcoin) are the most popular crypto-
 
 **Implementation**
 
-Initially the master and worker nodes are registered in the same network pool using shared secure cookie. After this the worker nodes, who already know the master node and master process name, ping the master node to establish a connection for message passing.
+Initially, the master and worker nodes are registered in the same network pool using shared secure cookie. After this, the worker nodes, who already know the master node and master process name, ping the master node to establish a connection for message passing.
 
 Once the connection is established, first the master process is started followed by the worker processes.
 
@@ -40,7 +40,7 @@ Once the connection is established, first the master process is started followed
   title="Optional title"
   style="display: inline-block; margin: 0 auto; max-width: 300px">
 
-Master takes the number of leading zeroes to be present in bitcoin hash as input and starts mining coins. Once a worker process is available, it sends an available to mine message to master. Then the master allocates the mining task to that worker by sending a start to mine message along with input number number of zeroes. And the master listens and prints output from worker while parallelly mining coins by itself.
+Master takes the number of leading zeroes to be present in bitcoin hash as input and starts mining coins. Once a worker process is available, it sends an available to mine message to the master. Then the master allocates the mining task to that worker by sending a start to mine message along with input number number of zeroes. And the master listens to worker and prints output while parallelly mining coins by itself.
 
 **Assumptions**
 
