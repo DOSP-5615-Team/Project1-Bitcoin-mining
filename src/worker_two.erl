@@ -35,7 +35,7 @@ countZeros([First | Rest],Zeros) when Zeros > 0 ->
   end
 .
 
-returnString(ServerPIDName, ServerNode, ZeroCount, 0)->
+returnString(_ServerPIDName, _ServerNode, _ZeroCount, 0)->
   %io:format("Worker child process stopped mining ~n"),
   exit("normal");
 
@@ -46,24 +46,21 @@ returnString(ServerPIDName, ServerNode, ZeroCount, N)->
   case CheckTrue of
     found ->
       {ServerPIDName, ServerNode} ! {coinFound, string:concat(RandomString, string:concat(" ",RandomHash)), ?WORKER_PID_NAME, node(), ZeroCount},
-   % listenForServer(ServerPIDName, ServerNode);
       returnString(ServerPIDName, ServerNode, ZeroCount, N-1);
     notFound ->
-      %io:fwrite(" Not found in PID : ~p~n",[pid_to_list(self())]),
       returnString(ServerPIDName,ServerNode, ZeroCount, N)
   end.
 
 
 listenForServer(MasterPIDName, MasterNode) ->
-  %returnString(MasterNode, ZeroCount),
 
   receive
     {startMining, ZeroCount, MasterPIDName, MasterNode} ->
       io:format("Start to mine called ~n"),
-     % returnString(MasterPIDName, MasterNode , ZeroCount),
       lists:foreach(
+
         fun(_) ->
-          spawn(worker_two, returnString,[MasterPIDName, MasterNode , ZeroCount, 10])
-        end, lists:seq(1, 3)),
+          spawn(worker_two, returnString,[MasterPIDName, MasterNode , ZeroCount, 2])
+        end, lists:seq(1, erlang:system_info(logical_processors_available))),
       listenForServer(MasterPIDName, MasterNode)
   end.

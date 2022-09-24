@@ -7,10 +7,11 @@ start_master(ZeroCount) ->
   {_,_} = statistics(wall_clock),
   register(masterNode, spawn( main_master, listenForWorkers, [ZeroCount])),
 {masterNode, node()} ! {ready_to_mine_server, masterNode},
+  Logical_Cores = erlang:system_info(logical_processors_available),
   lists:foreach(
     fun(_) ->
-      spawn(main_master, returnString,[ZeroCount, 10])
-    end, lists:seq(1, 3)).
+      spawn(main_master, returnString,[ZeroCount, 2])
+    end, lists:seq(1, Logical_Cores)).
 
 generate_random(Length, AllowedChars) ->
   MaxLength = length(AllowedChars),
@@ -39,25 +40,19 @@ countZeros([First | Rest],Zeros) when Zeros > 0 ->
   end
 .
 
-returnString( ZeroCount, 0)->
-
-  %io:format("Master child process stopped mining ~n"),
+returnString( _, 0)->
   exit("normal");
+
 returnString( ZeroCount, CoinsToBeMined)->
   RandomStringLength = 8,
   [RandomString, RandomHash] = generate_random(RandomStringLength, "ABCDEFGHIJKLMOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"),
   CheckTrue = countZeros(RandomHash, ZeroCount),
   case CheckTrue of
     found ->
-    %  io:format("Format done"),
       io:format("~s", [string:concat(RandomString, string:concat(" ",RandomHash))]),
       io:format("PID : ~p ~n", [masterNode]),
-    %  {masterNode, node()} ! {coinFound_in_Master, string:concat(RandomString, string:concat(" ",RandomHash))};
-     % exit(normal);
-     % listenForWorkers(ZeroCount);
       returnString( ZeroCount, CoinsToBeMined-1);
     notFound ->
-      %io:fwrite(" Not found in PID : ~p~n",[pid_to_list(self())]),
       returnString( ZeroCount, CoinsToBeMined)
   end.
 
@@ -68,12 +63,12 @@ listenForWorkers(ZeroCount)->
       {WorkerPID, WorkerNode} !  {startMining, ZeroCount, masterNode, node()},
     listenForWorkers(ZeroCount);
 
-    { coinFound, StringFound, SenderPIDName, SenderNode , ZeroCount } ->
+    { coinFound, StringFound, SenderPIDName, _SenderNode , ZeroCount } ->
       io:format("~s",[StringFound]),
        io:fwrite("PID : ~p~n",[SenderPIDName]),
       listenForWorkers(ZeroCount)
 
-  after 15000 ->
+  after 25000 ->
     {_,CPU_time} = statistics(runtime),
     {_,Run_time} = statistics(wall_clock),
     timer:sleep(5000),
@@ -87,5 +82,3 @@ listenForWorkers(ZeroCount)->
 
 end
 .
-
-%1. timers
