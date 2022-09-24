@@ -40,35 +40,56 @@ Once the connection is established, first the master process is started followed
   title="Optional title"
   style="display: inline-block; margin: 0 auto; max-width: 300px">
 
-Then the master sends the coins to the next available workers that are to be mined and also mines some coins by itself.
-
-![](RackMultipart20220923-1-u90jkg_html_4b0f06296aead0f6.png) ![](RackMultipart20220923-1-u90jkg_html_dad407ee3409802d.jpg)
+Master takes the number of leading zeroes to be present in bitcoin hash as input and starts mining coins. Once a worker process is available, it sends an available to mine message to master. Then the master allocates the mining task to that worker by sending a start to mine message along with input number number of zeroes. And the master listens and prints output from worker while parallelly mining coins by itself.
 
 **Assumptions**
 
 - All the nodes should be under the same network pool and should be aware of the unique cookie that is used for secure connection.
-- The hash generated should have "K" leading zeros for a successful match.
-- As the number of actors grow, so does the number of possible combinations, resulting in the increased hash generation and a higher chance of finding the Bitcoins.
+- The hash generated should have exactly "K" leading zeros for a successful match.
+- As the number of actors grow, so does the number of possible combinations, resulting in the increased hash generation and a higher chance of finding the Bitcoins until a certain threshold.
 
 **Size of the work unit**
 
-The workers receive a mining request with no upper limit on the number of coins to be mined in this problem. For bitcoin mining we launched 2\*logproc worker process/node, where logproc is the number of logical processors available on teh computer. We also supervise each worker's process and restart it if it fails to guarantee that all worker processes remain operational.
+The workers receive a mining request with no upper limit on the number of coins to be mined in this problem. For bitcoin mining we launched 2\*number of logical processors per worker process/node using ```erlang:system_info(logical_processors_available) ```
 
-The work unit is 3 in size. A single worker (i) Produces a random worker, (ii) Performs SHA-256 encoding, (iii) Checks the encoded string for number of reading zeroes.
+The work unit is 3 in size i.e, each spawned process mines 3 coins before exiting. A single worker (i) Produces/spawns random worker processes, (ii) Each of these performs SHA-256 encoding, (iii) Checks the encoded string for number of reading zeroes.
 
 **The result of running your program for input 4**
 
 The below are the coins mined that contain 4 leading zeros.
 
-![](RackMultipart20220923-1-u90jkg_html_843cabb94745dde3.jpg)
+**Master Process Output**
 
-![](RackMultipart20220923-1-u90jkg_html_cddb90a3660d8d3b.jpg)
+<img
+  src="/img/output1.png"
+  alt="Master Server"
+  title="Optional title"
+  style="display: inline-block; margin: 0 auto; max-width: 300px">
+  
+  <img
+  src="/img/output2.png"
+  alt="Master Server"
+  title="Optional title"
+  style="display: inline-block; margin: 0 auto; max-width: 300px">
+  
+  **Worker Process Output**
+  
+  <img
+  src="/img/output3.png"
+  alt="Master Server"
+  title="Optional title"
+  style="display: inline-block; margin: 0 auto; max-width: 300px">
+  
 
 **The ratio of CPU time to REAL TIME**
 
-![](RackMultipart20220923-1-u90jkg_html_baf177493c57d9e.png)
+<img
+  src="/img/timer1.png"
+  alt="Master Server"
+  title="Optional title"
+  style="display: inline-block; margin: 0 auto; max-width: 300px">
 
-CPU/Real-time ratio (i.e., CPU time/Real time) = 0.438/0.219=2.0 (\>1, therefore Parallelism exists).
+```CPU/Real-time ratio (i.e., CPU time/Real time) = 314.906/134.234=2.3459 (\>1, therefore Parallelism exists).```
 
 **The coin with the most 0s you managed to find**
 
@@ -76,8 +97,8 @@ The coins with the most 0s we found were 7.
 
 **The largest number of working machines you were able to run your code with.**
 
-Since we only have three machines, we made it work on them. However, we can tweek this code to make it work on numerous machines.
+Since we only have three machines, we made it work on them. However, we can tweek this code to make it work on numerous machines. The master is capable of connecting with and accepting the output from large number of workers.
 
 **Conclusion:**
 
-The CPU\_time/Real\_time ratio in the client-server architecture is 2, which is greater than the one obtained while running on a single machine for the same amount of computation. As a result, the introduced multi-system design has improved performance.
+The CPU\_time/Real\_time ratio in the client-server architecture is greater than 2, which is greater than the one obtained while running on a single machine for the same amount of computation. As a result, the introduced multi-system design has improved performance.
