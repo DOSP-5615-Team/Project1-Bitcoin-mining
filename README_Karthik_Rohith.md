@@ -12,7 +12,7 @@ Bitcoins (see http://en.wikipedia.org/wiki/Bitcoin) are the most popular crypto-
 
 **Implementation**
 
-Initially the master and worker nodes are registered in the same network pool using shared secure cookie. After this the worker nodes who already know the master node and master process name, ping the master node to establish a connection for message passing.
+Initially the master and worker nodes are registered in the same network pool using shared secure cookie. After this the worker nodes, who already know the master node and master process name, ping the master node to establish a connection for message passing.
 
 Once the connection is established, first the master process is started followed by the worker processes.
 
