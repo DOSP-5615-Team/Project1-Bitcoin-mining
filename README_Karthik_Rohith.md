@@ -81,15 +81,21 @@ The below are the coins mined that contain 4 leading zeros.
   style="display: inline-block; margin: 0 auto; max-width: 300px">
   
 
-**The ratio of CPU time to REAL TIME**
+**The ratio of CPU Time to REAL Time**
 
 <img
   src="/img/timer1.png"
   alt="Master Server"
   title="Optional title"
   style="display: inline-block; margin: 0 auto; max-width: 300px">
+  
+  <img
+  src="/img/timer2.png"
+  alt="Master Server"
+  title="Optional title"
+  style="display: inline-block; margin: 0 auto; max-width: 300px">
 
-```CPU/Real-time ratio (i.e., CPU time/Real time) = 314.906/134.234=2.3459 (\>1, therefore Parallelism exists).```
+```CPU/Real-time ratio (i.e., CPU time/Real time) = 314.906/134.234=2.3459 (>1, therefore Parallelism exists).```
 
 **The coin with the most 0s you managed to find**
 
