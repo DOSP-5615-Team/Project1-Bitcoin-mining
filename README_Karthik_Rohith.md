@@ -8,7 +8,12 @@
 
 **Problem Definition**
 
-Bitcoins (see http://en.wikipedia.org/wiki/Bitcoin) are the most popular crypto-currency in common use. At their heart, bitcoins use the hardness of cryptographic hashing (for a reference see http://en.wikipedia.org/wiki/Cryptographic Hash Function)to ensure a limited "supply" of coins. In particular, the key component in a bit-coin is an input that, when "hashed" produces an output smaller than a target value. In practice, the comparison values have leading 0's, thus the bitcoin is required to have a given number of leading 0's (to ensure 3 leading 0's, you look for hashes smaller than 0x001000_..._ or smaller or equal to _0x000ff..._.The hash you are required to use is SHA-256. You can check your version against this online hasher:http://www.xorbin.com/tools/sha256-hash-calculator. For example, when the text "COP5615 is a boring class" is hashed, the value fb4431b6a2df71b6cbad961e08fa06ee6fff47e3bc14e977f4b2ea57caee48a4 is obtained. For the coins, you find, check your answer with this calculator to ensure correctness. The goal of this first project is to use Erlang and the Actor Model to build a good solution to this problem that runs well on multi-core machines.
+The problem is to implement a distributed system using erlang/OTP to generate cryptographic hashes in a concurrent manner using logic similar to bitcoin mining. The task is to generate random strings whose hexadecimal SHA 256 hash digests start with the given number of zeroes as input. 
+For example, if given input is 6, we need to calculate and output the random string when appended to UFID generates a hash starting with 6 zeros.
+
+```vmetlapalli;RE6Edjuk ```
+```000000c44c5139ffa54451f37454d7d0d329cfe2e58a20cf1271fe2a2d678df2```
+
 
 **Implementation**
 
@@ -52,7 +57,7 @@ Master takes the number of leading zeroes to be present in bitcoin hash as input
 
 The workers receive a mining request with no upper limit on the number of coins to be mined in this problem. For bitcoin mining we launched 2\*number of logical processors per worker process/node using ```erlang:system_info(logical_processors_available) ```
 
-The work unit is 3 in size i.e, each spawned process mines 3 coins before exiting. A single worker (i) Produces/spawns random worker processes, (ii) Each of these performs SHA-256 encoding, (iii) Checks the encoded string for number of reading zeroes.
+The work unit is 3 in size i.e., each spawned process mines 3 coins before exiting. A single worker (i) Produces/spawns random worker processes, (ii) Each of these performs SHA-256 encoding, (iii) Each of these checks the encoded string for ‘k’ leading number of zeroes and sends it to the master if it meets the criteria.
 
 **The result of running your program for input 4**
 
